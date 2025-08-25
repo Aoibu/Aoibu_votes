@@ -9,31 +9,33 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
 
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 <style>
-  body, header, .container, .section-title, .hint, .card, .info, .title, .subtitle, .pickline, .actions, footer {
-    font-family: 'Almarai', sans-serif !important;
-  }
-  body {margin:0; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); color:#f1f1f1;}
-  header {background-color:#111; padding:20px; text-align:center; font-size:28px; font-weight:700; color:#ff7ad9; border-bottom:3px solid #f06292;}
-  .container {max-width:1100px; margin:auto; padding:20px;}
-  .section-title {font-size:24px; margin:40px 0 12px; border-right:5px solid #f06292; padding-right:10px;}
-  .grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
-  .card {background-color:#1e1e1e; border:1px solid #333; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:transform .25s, box-shadow .25s; position:relative;}
-  .card:hover {transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,.35);}
-  .poster-wrap {background:#0d1b22; aspect-ratio:2/3; display:grid; place-items:center; overflow:hidden;}
-  .poster {width:100%; height:100%; object-fit:cover;}
-  .fallback {width:100%; height:100%; display:grid; place-items:center; font-size:14px; color:#ffcce7; padding:8px; text-align:center;}
-  .info {padding:10px 12px; display:grid; gap:8px;}
-  .title {font-weight:700; color:#ff7ad9; font-size:16px; line-height:1.4;}
-  .subtitle {font-size:12px; color:#ffb6d3;}
-  .pickline {display:flex; align-items:center; gap:8px;}
-  .pickline input {transform:scale(1.2);}
-  .actions {display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px;}
-  button {background:#f06292; color:#fff; border:0; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer; transition:transform .2s;}
-  button:hover {transform:translateY(-2px);}
-  button:disabled {opacity:.55; cursor:not-allowed;}
-  .status {font-size:14px; color:#ffcce7; min-height:22px; margin-top:8px;}
-  footer {text-align:center; color:#ccc; font-size:14px; padding:30px 10px;}
+body, header, .container, .section-title, .hint, .card, .info, .title, .subtitle, .pickline, .actions, footer {
+  font-family: 'Almarai', sans-serif !important;
+}
+body {margin:0; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); color:#f1f1f1;}
+header {background-color:#111; padding:20px; text-align:center; font-size:28px; font-weight:700; color:#ff7ad9; border-bottom:3px solid #f06292;}
+.container {max-width:1100px; margin:auto; padding:20px;}
+.section-title {font-size:24px; margin:40px 0 12px; border-right:5px solid #f06292; padding-right:10px;}
+.grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+.card {background-color:#1e1e1e; border:1px solid #333; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:transform .25s, box-shadow .25s; position:relative;}
+.card:hover {transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,.35);}
+.poster-wrap {background:#0d1b22; aspect-ratio:2/3; display:grid; place-items:center; overflow:hidden;}
+.poster {width:100%; height:100%; object-fit:cover;}
+.fallback {width:100%; height:100%; display:grid; place-items:center; font-size:14px; color:#ffcce7; padding:8px; text-align:center;}
+.info {padding:10px 12px; display:grid; gap:8px;}
+.title {font-weight:700; color:#ff7ad9; font-size:16px; line-height:1.4;}
+.subtitle {font-size:12px; color:#ffb6d3;}
+.pickline {display:flex; align-items:center; gap:8px;}
+.pickline input {transform:scale(1.2);}
+.actions {display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px;}
+button {background:#f06292; color:#fff; border:0; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer; transition:transform .2s;}
+button:hover {transform:translateY(-2px);}
+button:disabled {opacity:.55; cursor:not-allowed;}
+.status {font-size:14px; color:#ffcce7; min-height:22px; margin-top:8px;}
+#captchaContainer {display:none; margin-top:15px;}
 </style>
 </head>
 <body>
@@ -46,10 +48,15 @@
     <div id="grid" class="grid" aria-live="polite"></div>
 
     <div class="actions">
-      <button id="submitBtn" type="submit" disabled>إرسال تصويتي</button>
+      <button id="voteBtn" type="button">إرسال تصويتي</button>
       <button id="clearBtn" type="button" disabled>مسح الاختيارات</button>
       <span id="pickedInfo"></span>
     </div>
+
+    <div id="captchaContainer">
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAABupN3GWUO1WU331"></div>
+    </div>
+
     <div class="status" id="status"></div>
   </form>
 
@@ -58,14 +65,12 @@
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFNCcSwx2c30Cv5kebDbSaiQwseXarL3uTdKH-LpTACsX2pgZDGE7p73sxb1LAO7ld7w/exec";
-
-// رابط شيتس بصيغة JSON (لازم يكون منشور عبر "Publish to web" من File > Share)
 const SHEET_URL = "https://opensheet.elk.sh/11MQYWmFykMjljqJqKIeTNBt-49mVW109NaCi2hLIZpg/1";
 
 const grid = document.getElementById('grid');
-const form = document.getElementById('voteForm');
-const submitBtn = document.getElementById('submitBtn');
+const voteBtn = document.getElementById('voteBtn');
 const clearBtn = document.getElementById('clearBtn');
+const captchaContainer = document.getElementById('captchaContainer');
 const statusEl = document.getElementById('status');
 const pickedInfo = document.getElementById('pickedInfo');
 const choicesField = document.getElementById('choicesField');
@@ -74,7 +79,7 @@ let selected = new Set();
 let CHARACTERS = [];
 
 function updateUIState(){
-  submitBtn.disabled = selected.size === 0 || selected.size > 3;
+  voteBtn.disabled = selected.size === 0 || selected.size > 3;
   clearBtn.disabled = selected.size === 0;
   pickedInfo.textContent = `المختار: ${selected.size} / 3`;
   const arr = Array.from(selected).map(num=>{
@@ -97,30 +102,19 @@ async function fetchPoster(wikiEn){
     if(!res.ok) throw new Error('bad status');
     const data = await res.json();
     return data?.thumbnail?.source || data?.originalimage?.source || null;
-  }catch(e){
-    return null;
-  }
+  }catch(e){ return null; }
 }
 
 function cardTemplate({n,name,wikiEn}){
-  const card=document.createElement('div');
-  card.className='card';
-  const posterWrap=document.createElement('div');
-  posterWrap.className='poster-wrap';
-  const img=document.createElement('img');
-  img.className='poster';
-  img.alt=`${name}`;
-  img.loading='lazy';
-  const fallback=document.createElement('div');
-  fallback.className='fallback';
-  fallback.textContent='جاري تحميل الصورة…';
+  const card=document.createElement('div'); card.className='card';
+  const posterWrap=document.createElement('div'); posterWrap.className='poster-wrap';
+  const img=document.createElement('img'); img.className='poster'; img.alt=name; img.loading='lazy';
+  const fallback=document.createElement('div'); fallback.className='fallback'; fallback.textContent='جاري تحميل الصورة…';
   posterWrap.appendChild(fallback);
 
-  const info=document.createElement('div');
-  info.className='info';
+  const info=document.createElement('div'); info.className='info';
   const title=document.createElement('div'); title.className='title'; title.textContent=`${n}. ${name}`;
   const sub=document.createElement('div'); sub.className='subtitle'; sub.textContent= wikiEn ? `Wikipedia: ${wikiEn.replaceAll('_',' ')}` : '';
-
   const pickline=document.createElement('label'); pickline.className='pickline';
   const checkbox=document.createElement('input'); checkbox.type='checkbox'; checkbox.value=n;
   checkbox.addEventListener('change', ()=>{
@@ -138,9 +132,8 @@ function cardTemplate({n,name,wikiEn}){
 
   fetchPoster(wikiEn).then(src=>{
     if(src){ img.src=src; posterWrap.innerHTML=''; posterWrap.appendChild(img);}
-    else{ fallback.textContent='لا توجد صورة متاحة';}
+    else{ fallback.textContent='لا توجد صورة متاحة'; }
   });
-
   return card;
 }
 
@@ -150,9 +143,7 @@ async function loadCharacters(){
     const data = await res.json();
     CHARACTERS = data.map((row,i)=>({n:i+1, name:row["الاسم"], wikiEn:row["wikiEn"] || ""}));
     CHARACTERS.forEach(ch => grid.appendChild(cardTemplate(ch)));
-  }catch(e){
-    flash("❌ فشل تحميل الشخصيات من شيتس",4000);
-  }
+  }catch(e){ flash("❌ فشل تحميل الشخصيات من شيتس",4000); }
 }
 
 clearBtn.addEventListener('click', ()=>{
@@ -161,35 +152,29 @@ clearBtn.addEventListener('click', ()=>{
   updateUIState();
 });
 
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  if(selected.size===0 || selected.size>3){ flash('اختر من 1 إلى 3 شخصيات فقط.',2000); return;}
-  updateUIState();
-  submitBtn.disabled=true;
-  flash('جاري إرسال تصويتك…');
+voteBtn.addEventListener('click', ()=>{
+  if(selected.size===0){ flash('❌ اختر شخصية واحدة على الأقل'); return; }
+  captchaContainer.style.display='block';
+  window.scrollTo({top:captchaContainer.offsetTop-20, behavior:'smooth'});
+});
 
-  try{
-    const ua = navigator.userAgent;
-    const choices = choicesField.value;
-    const ipData = await fetch("https://api.ipify.org?format=json").then(r=>r.json());
-    const ip = ipData.ip;
+window.turnstileCallback = async function(token){
+  const checked = Array.from(document.querySelectorAll('input[name="choices"]:checked')).map(c=>c.value);
+  const formData = new FormData();
+  formData.append("choices", checked.join(" | "));
+  formData.append("ip", (await fetch("https://api.ipify.org?format=json").then(r=>r.json())).ip);
+  formData.append("cf-turnstile-response", token);
 
-    const formData = new FormData();
-    formData.append("اختيارات_الشخصيات", choices);
-    formData.append("ip", ip);
-    formData.append("ua", ua);
-
-    await fetch(SCRIPT_URL,{method:"POST", body:formData});
+  try {
+    const res = await fetch(SCRIPT_URL, {method:"POST", body:formData});
+    const text = await res.text();
     flash('✅ تم إرسال تصويتك بنجاح!',3000);
     selected.clear();
     document.querySelectorAll('.pickline input').forEach(ch=>ch.checked=false);
     updateUIState();
-    submitBtn.disabled=false;
-  }catch(err){
-    flash('❌ حدث خطأ أثناء الإرسال.',3000);
-    submitBtn.disabled=false;
-  }
-});
+    captchaContainer.style.display='none';
+  } catch(err) { flash('❌ حدث خطأ أثناء الإرسال',3000); }
+};
 
 updateUIState();
 loadCharacters();
