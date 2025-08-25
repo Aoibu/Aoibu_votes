@@ -30,42 +30,54 @@ header {background-color:#111; padding:20px; text-align:center; font-size:28px; 
 .subtitle {font-size:12px; color:#ffb6d3;}
 .pickline {display:flex; align-items:center; gap:8px;}
 .pickline input {transform:scale(1.2);}
-.actions {display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px;}
-button {background:#f06292; color:#fff; border:0; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer; transition:transform .2s;}
-button:hover {transform:translateY(-2px);}
-button:disabled {opacity:.55; cursor:not-allowed;}
-.status {font-size:14px; color:#ffcce7; min-height:22px; margin-top:8px;}
+.actions-bar {
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#111;
+  padding:12px 20px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  border-top:2px solid #f06292;
+  z-index:100;
+}
+.actions-bar button {
+  background:#f06292;
+  color:#fff;
+  border:0;
+  font-weight:700;
+  padding:10px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:transform .2s;
+}
+.actions-bar button:hover {transform:translateY(-2px);}
+.actions-bar button:disabled {opacity:.55; cursor:not-allowed;}
+#pickedInfo {align-self:center; color:#ffcce7; font-size:14px;}
 
-/* النافذة المنبثقة */
+/* نافذة الكابتشا */
 .modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display:none;
+  position:fixed;
+  z-index:200;
+  left:0; top:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.7);
+  justify-content:center;
+  align-items:center;
 }
 .modal-content {
-  background: #1e1e1e;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  background:#1e1e1e;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  max-width:350px;
+  width:90%;
+  box-shadow:0 0 15px rgba(0,0,0,0.6);
 }
-.modal-content h3 {margin-bottom: 15px; color:#ff7ad9;}
-.modal-close {
-  background: #f06292;
-  border: none;
-  color: #fff;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 12px;
-}
+.modal-content h3 {margin-bottom:15px; color:#ff7ad9;}
+.status {font-size:14px; color:#ffcce7; min-height:22px; margin-top:8px;}
 </style>
 </head>
 <body>
@@ -76,17 +88,17 @@ button:disabled {opacity:.55; cursor:not-allowed;}
   <form id="voteForm">
     <input type="hidden" id="choicesField"/>
     <div id="grid" class="grid" aria-live="polite"></div>
-
-    <div class="actions">
-      <button id="voteBtn" type="button">إرسال تصويتي</button>
-      <button id="clearBtn" type="button" disabled>مسح الاختيارات</button>
-      <span id="pickedInfo"></span>
-    </div>
-
     <div class="status" id="status"></div>
   </form>
 
   <footer>Aoibu • صور من ويكيبيديا.</footer>
+</div>
+
+<!-- شريط الأزرار أسفل الشاشة -->
+<div class="actions-bar" id="actionsBar" style="display:none;">
+  <button id="voteBtn" type="button">إرسال تصويتي</button>
+  <button id="clearBtn" type="button" disabled>مسح الاختيارات</button>
+  <span id="pickedInfo"></span>
 </div>
 
 <!-- نافذة الكابتشا -->
@@ -98,12 +110,11 @@ button:disabled {opacity:.55; cursor:not-allowed;}
            data-sitekey="0x4AAAAAABupN3GWUO1WU331" 
            data-callback="turnstileCallback"></div>
     </div>
-    <button class="modal-close" onclick="closeModal()">إلغاء</button>
   </div>
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFNCcSwx2c30Cv5kebDbSaiQwseXarL3uTdKH-LpTACsX2pgZDGE7p73sxb1LAO7ld7w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJ3LFb5ZdDd_mq_eJshBq-VM0aM-0oKAe8H8rcXl2H4frA7IDstfJvYVzErBYs_Zrh/exec";
 
 const CHARACTERS = [
 {n:1, name:"Ai Haibara", wikiEn:"Ai_Haibara"},
@@ -188,10 +199,11 @@ const CHARACTERS = [
 const grid = document.getElementById('grid');
 const voteBtn = document.getElementById('voteBtn');
 const clearBtn = document.getElementById('clearBtn');
+const actionsBar = document.getElementById('actionsBar');
+const captchaModal = document.getElementById('captchaModal');
 const statusEl = document.getElementById('status');
 const pickedInfo = document.getElementById('pickedInfo');
 const choicesField = document.getElementById('choicesField');
-const captchaModal = document.getElementById('captchaModal');
 
 let selected = new Set();
 
@@ -199,6 +211,7 @@ function updateUIState(){
   voteBtn.disabled = selected.size === 0 || selected.size > 3;
   clearBtn.disabled = selected.size === 0;
   pickedInfo.textContent = `المختار: ${selected.size} / 3`;
+  actionsBar.style.display = selected.size > 0 ? "flex" : "none";
   choicesField.value = Array.from(selected).map(n=>{
     const item = CHARACTERS.find(m=>m.n==n);
     return `${item?.name || ''}`;
@@ -236,6 +249,7 @@ function cardTemplate({n,name,wikiEn}){
   info.appendChild(title); info.appendChild(sub); info.appendChild(pickline);
   card.appendChild(posterWrap); card.appendChild(info);
 
+  // fetch Wikipedia poster
   fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiEn)}`)
     .then(r=>r.json()).then(data=>{
       if(data?.thumbnail?.source || data?.originalimage?.source){
@@ -255,18 +269,16 @@ clearBtn.addEventListener('click', ()=>{
   updateUIState();
 });
 
+// عند الضغط على زر التصويت، تظهر الكابتشا
 voteBtn.addEventListener('click', ()=>{
-  if(selected.size===0){ 
-    flash('❌ اختر على الأقل شخصية واحدة'); 
-    return; 
-  }
+  if(selected.size===0){ flash('❌ اختر على الأقل شخصية واحدة'); return; }
   captchaModal.style.display='flex';
 });
 
-function closeModal(){
-  captchaModal.style.display='none';
-}
+// إغلاق النافذة
+function closeModal(){ captchaModal.style.display='none'; }
 
+// Turnstile callback بعد التحقق
 window.turnstileCallback = async function(token){
   const formData = new FormData();
   formData.append("choices", choicesField.value);
@@ -279,9 +291,10 @@ window.turnstileCallback = async function(token){
     selected.clear();
     document.querySelectorAll('.pickline input').forEach(ch=>ch.checked=false);
     updateUIState();
-    closeModal();
   } catch(err){
     flash('❌ حدث خطأ أثناء الإرسال',3000);
+  } finally {
+    closeModal(); // تغلق تلقائيًا بعد الانتهاء
   }
 };
 
