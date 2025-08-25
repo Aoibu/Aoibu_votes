@@ -1,142 +1,291 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تصويت أفضل الشخصيات النسائية</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>تصويت أفضل الشخصيات النسائية في كونان</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 <style>
-body {font-family: Arial, sans-serif; background:#1e1e1e; color:#f1f1f1; padding:20px;}
-h1 {color:#00e0ff;}
-button {padding:10px 18px; background:#00bcd4; color:#111; border:none; border-radius:6px; cursor:pointer;}
-button:disabled {opacity:.5; cursor:not-allowed;}
-label {display:block; margin:5px 0;}
-#status {margin-top:10px;}
-#captchaContainer {display:none; margin-top:15px;}
+body, header, .container, .section-title, .card, .info, .title, .subtitle, .pickline, .actions, footer {
+  font-family: 'Almarai', sans-serif !important;
+}
+body {margin:0; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); color:#f1f1f1;}
+header {background-color:#111; padding:20px; text-align:center; font-size:28px; font-weight:700; color:#ff7ad9; border-bottom:3px solid #f06292;}
+.container {max-width:1100px; margin:auto; padding:20px;}
+.section-title {font-size:24px; margin:40px 0 12px; border-right:5px solid #f06292; padding-right:10px;}
+.grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+.card {background-color:#1e1e1e; border:1px solid #333; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:transform .25s, box-shadow .25s; position:relative;}
+.card:hover {transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,.35);}
+.poster-wrap {background:#0d1b22; aspect-ratio:2/3; display:grid; place-items:center; overflow:hidden;}
+.poster {width:100%; height:100%; object-fit:cover;}
+.fallback {width:100%; height:100%; display:grid; place-items:center; font-size:14px; color:#ffcce7; padding:8px; text-align:center;}
+.info {padding:10px 12px; display:grid; gap:8px;}
+.title {font-weight:700; color:#ff7ad9; font-size:16px; line-height:1.4;}
+.subtitle {font-size:12px; color:#ffb6d3;}
+.pickline {display:flex; align-items:center; gap:8px;}
+.pickline input {transform:scale(1.2);}
+.actions {display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px;}
+button {background:#f06292; color:#fff; border:0; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer; transition:transform .2s;}
+button:hover {transform:translateY(-2px);}
+button:disabled {opacity:.55; cursor:not-allowed;}
+.status {font-size:14px; color:#ffcce7; min-height:22px; margin-top:8px;}
+
+/* النافذة المنبثقة */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+.modal-content h3 {margin-bottom: 15px; color:#ff7ad9;}
+.modal-close {
+  background: #f06292;
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 12px;
+}
 </style>
 </head>
 <body>
-<h1>تصويت أفضل الشخصيات النسائية</h1>
+<header>تصويت أفضل الشخصيات النسائية في المحقق كونان</header>
+<div class="container">
+  <div class="section-title">اختر حتى 3 شخصيات فقط</div>
 
-<form id="voteForm">
-<div id="characters">
-<label><input type="checkbox" name="choices" value="Ai Haibara"> Ai Haibara</label>
-<label><input type="checkbox" name="choices" value="Akako Koizumi"> Akako Koizumi</label>
-<label><input type="checkbox" name="choices" value="Akemi Miyano"> Akemi Miyano</label>
-<label><input type="checkbox" name="choices" value="Akie Hatamoto"> Akie Hatamoto</label>
-<label><input type="checkbox" name="choices" value="Amanda Hughes"> Amanda Hughes</label>
-<label><input type="checkbox" name="choices" value="Aoko Nakamori"> Aoko Nakamori</label>
-<label><input type="checkbox" name="choices" value="Asami Tsuburaya"> Asami Tsuburaya</label>
-<label><input type="checkbox" name="choices" value="Ayako Nagai"> Ayako Nagai</label>
-<label><input type="checkbox" name="choices" value="Ayako Suzuki"> Ayako Suzuki</label>
-<label><input type="checkbox" name="choices" value="Ayumi Yoshida"> Ayumi Yoshida</label>
-<label><input type="checkbox" name="choices" value="Azusa Enomoto"> Azusa Enomoto</label>
-<label><input type="checkbox" name="choices" value="Chiharu Matsubara"> Chiharu Matsubara</label>
-<label><input type="checkbox" name="choices" value="Chihaya Hagiwara"> Chihaya Hagiwara</label>
-<label><input type="checkbox" name="choices" value="Chikage Kuroba"> Chikage Kuroba</label>
-<label><input type="checkbox" name="choices" value="Chikako Ikeda"> Chikako Ikeda</label>
-<label><input type="checkbox" name="choices" value="Chianti"> Chianti</label>
-<label><input type="checkbox" name="choices" value="Curaçao"> Curaçao</label>
-<label><input type="checkbox" name="choices" value="Elena Miyano"> Elena Miyano</label>
-<label><input type="checkbox" name="choices" value="Eri Kisaki"> Eri Kisaki</label>
-<label><input type="checkbox" name="choices" value="Fujiko Mine"> Fujiko Mine</label>
-<label><input type="checkbox" name="choices" value="Furuyo Senma"> Furuyo Senma</label>
-<label><input type="checkbox" name="choices" value="Fusae Campbell"> Fusae Campbell</label>
-<label><input type="checkbox" name="choices" value="Hidemi Hondou"> Hidemi Hondou</label>
-<label><input type="checkbox" name="choices" value="Hikaru Hinohara"> Hikaru Hinohara</label>
-<label><input type="checkbox" name="choices" value="Hitomi"> Hitomi</label>
-<label><input type="checkbox" name="choices" value="Ichiyo Haneda"> Ichiyo Haneda</label>
-<label><input type="checkbox" name="choices" value="Ishida"> Ishida</label>
-<label><input type="checkbox" name="choices" value="Jodie Starling"> Jodie Starling</label>
-<label><input type="checkbox" name="choices" value="Juno Glass"> Juno Glass</label>
-<label><input type="checkbox" name="choices" value="Kaori Nakahara"> Kaori Nakahara</label>
-<label><input type="checkbox" name="choices" value="Kazumi Tsukamoto"> Kazumi Tsukamoto</label>
-<label><input type="checkbox" name="choices" value="Kazuha Toyama"> Kazuha Toyama</label>
-<label><input type="checkbox" name="choices" value="Keiko Momoi"> Keiko Momoi</label>
-<label><input type="checkbox" name="choices" value="Kimie Shimabukuro"> Kimie Shimabukuro</label>
-<label><input type="checkbox" name="choices" value="Leona Buccholz"> Leona Buccholz</label>
-<label><input type="checkbox" name="choices" value="Maria Higashio"> Maria Higashio</label>
-<label><input type="checkbox" name="choices" value="Mary Sera"> Mary Sera</label>
-<label><input type="checkbox" name="choices" value="Masumi Sera"> Masumi Sera</label>
-<label><input type="checkbox" name="choices" value="Megumi Ito"> Megumi Ito</label>
-<label><input type="checkbox" name="choices" value="Midori Kuriyama"> Midori Kuriyama</label>
-<label><input type="checkbox" name="choices" value="Midori Megure"> Midori Megure</label>
-<label><input type="checkbox" name="choices" value="Midoriko Nakamori"> Midoriko Nakamori</label>
-<label><input type="checkbox" name="choices" value="Misae Yamamura"> Misae Yamamura</label>
-<label><input type="checkbox" name="choices" value="Miwako Sato"> Miwako Sato</label>
-<label><input type="checkbox" name="choices" value="Momiji Ooka"> Momiji Ooka</label>
-<label><input type="checkbox" name="choices" value="Mrs. Minagawa"> Mrs. Minagawa</label>
-<label><input type="checkbox" name="choices" value="Naeko Miike"> Naeko Miike</label>
-<label><input type="checkbox" name="choices" value="Natsue Hatamoto"> Natsue Hatamoto</label>
-<label><input type="checkbox" name="choices" value="Natsuki Koshimizu"> Natsuki Koshimizu</label>
-<label><input type="checkbox" name="choices" value="Natsuko Shibuya"> Natsuko Shibuya</label>
-<label><input type="checkbox" name="choices" value="Ooka Family Mother"> Ooka Family Mother</label>
-<label><input type="checkbox" name="choices" value="Ran Mouri"> Ran Mouri</label>
-<label><input type="checkbox" name="choices" value="Reiko Kujo"> Reiko Kujo</label>
-<label><input type="checkbox" name="choices" value="Renge Kataoka"> Renge Kataoka</label>
-<label><input type="checkbox" name="choices" value="Rose"> Rose</label>
-<label><input type="checkbox" name="choices" value="Ruby Jones"> Ruby Jones</label>
-<label><input type="checkbox" name="choices" value="Rumi Wakasa"> Rumi Wakasa</label>
-<label><input type="checkbox" name="choices" value="Sakura Toyama"> Sakura Toyama</label>
-<label><input type="checkbox" name="choices" value="Sakurako Yonehara"> Sakurako Yonehara</label>
-<label><input type="checkbox" name="choices" value="Sanae Sugita"> Sanae Sugita</label>
-<label><input type="checkbox" name="choices" value="Sato Family Mother"> Sato Family Mother</label>
-<label><input type="checkbox" name="choices" value="Sayaka Mine"> Sayaka Mine</label>
-<label><input type="checkbox" name="choices" value="Shiho Miyano"> Shiho Miyano</label>
-<label><input type="checkbox" name="choices" value="Shizuka Hattori"> Shizuka Hattori</label>
-<label><input type="checkbox" name="choices" value="Shizuka Mine"> Shizuka Mine</label>
-<label><input type="checkbox" name="choices" value="Sonoko Suzuki"> Sonoko Suzuki</label>
-<label><input type="checkbox" name="choices" value="Starling Family Mother"> Starling Family Mother</label>
-<label><input type="checkbox" name="choices" value="Sumiko Kobayashi"> Sumiko Kobayashi</label>
-<label><input type="checkbox" name="choices" value="Teiko Agasa"> Teiko Agasa</label>
-<label><input type="checkbox" name="choices" value="Tomoko Suzuki"> Tomoko Suzuki</label>
-<label><input type="checkbox" name="choices" value="Vermouth"> Vermouth</label>
-<label><input type="checkbox" name="choices" value="Yoko Okino"> Yoko Okino</label>
-<label><input type="checkbox" name="choices" value="Yoko Sawaki"> Yoko Sawaki</label>
-<label><input type="checkbox" name="choices" value="Yui Uehara"> Yui Uehara</label>
-<label><input type="checkbox" name="choices" value="Yukiko Kudo"> Yukiko Kudo</label>
-<label><input type="checkbox" name="choices" value="Yumi Miyamoto"> Yumi Miyamoto</label>
-<label><input type="checkbox" name="choices" value="Yuzui Fukui"> Yuzui Fukui</label>
+  <form id="voteForm">
+    <input type="hidden" id="choicesField"/>
+    <div id="grid" class="grid" aria-live="polite"></div>
+
+    <div class="actions">
+      <button id="voteBtn" type="button">إرسال تصويتي</button>
+      <button id="clearBtn" type="button" disabled>مسح الاختيارات</button>
+      <span id="pickedInfo"></span>
+    </div>
+
+    <div class="status" id="status"></div>
+  </form>
+
+  <footer>Aoibu • صور من ويكيبيديا.</footer>
 </div>
 
-<button type="button" id="voteBtn">إرسال تصويتي</button>
-<div id="captchaContainer">
-  <div class="cf-challenge" data-sitekey="0x4AAAAAABupN3GWUO1WU331"></div>
+<!-- نافذة الكابتشا -->
+<div id="captchaModal" class="modal">
+  <div class="modal-content">
+    <h3>تحقق قبل التصويت</h3>
+    <div id="captchaContainer">
+      <div class="cf-turnstile" 
+           data-sitekey="0x4AAAAAABupN3GWUO1WU331" 
+           data-callback="turnstileCallback"></div>
+    </div>
+    <button class="modal-close" onclick="closeModal()">إلغاء</button>
+  </div>
 </div>
-<p id="status"></p>
 
 <script>
-const voteBtn = document.getElementById('voteBtn');
-const captchaContainer = document.getElementById('captchaContainer');
-const statusEl = document.getElementById('status');
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFNCcSwx2c30Cv5kebDbSaiQwseXarL3uTdKH-LpTACsX2pgZDGE7p73sxb1LAO7ld7w/exec";
 
-voteBtn.addEventListener('click', () => {
-    const checked = Array.from(document.querySelectorAll('input[name="choices"]:checked'));
-    if(checked.length === 0) {
-        statusEl.textContent = "❌ اختر شخصية واحدة على الأقل";
-        return;
-    }
-    captchaContainer.style.display = 'block';
-    window.scrollTo({top:captchaContainer.offsetTop-20, behavior:'smooth'});
+const CHARACTERS = [
+{n:1, name:"Ai Haibara", wikiEn:"Ai_Haibara"},
+{n:2, name:"Akako Koizumi", wikiEn:"Akako_Koizumi"},
+{n:3, name:"Akemi Miyano", wikiEn:"Akemi_Miyano"},
+{n:4, name:"Akie Hatamoto", wikiEn:"Akie_Hatamoto"},
+{n:5, name:"Amanda Hughes", wikiEn:"Amanda_Hughes"},
+{n:6, name:"Aoko Nakamori", wikiEn:"Aoko_Nakamori"},
+{n:7, name:"Asami Tsuburaya", wikiEn:"Asami_Tsuburaya"},
+{n:8, name:"Ayako Nagai", wikiEn:"Ayako_Nagai"},
+{n:9, name:"Ayako Suzuki", wikiEn:"Ayako_Suzuki"},
+{n:10, name:"Ayumi Yoshida", wikiEn:"Ayumi_Yoshida"},
+{n:11, name:"Azusa Enomoto", wikiEn:"Azusa_Enomoto"},
+{n:12, name:"Chiharu Matsubara", wikiEn:"Chiharu_Matsubara"},
+{n:13, name:"Chihaya Hagiwara", wikiEn:"Chihaya_Hagiwara"},
+{n:14, name:"Chikage Kuroba", wikiEn:"Chikage_Kuroba"},
+{n:15, name:"Chikako Ikeda", wikiEn:"Chikako_Ikeda"},
+{n:16, name:"Chianti", wikiEn:"Chianti"},
+{n:17, name:"Curaçao", wikiEn:"Curacao"},
+{n:18, name:"Elena Miyano", wikiEn:"Elena_Miyano"},
+{n:19, name:"Eri Kisaki", wikiEn:"Eri_Kisaki"},
+{n:20, name:"Fujiko Mine", wikiEn:"Fujiko_Mine"},
+{n:21, name:"Furuyo Senma", wikiEn:"Furuyo_Senma"},
+{n:22, name:"Fusae Campbell", wikiEn:"Fusae_Campbell"},
+{n:23, name:"Hidemi Hondou", wikiEn:"Hidemi_Hondou"},
+{n:24, name:"Hikaru Hinohara", wikiEn:"Hikaru_Hinohara"},
+{n:25, name:"Hitomi", wikiEn:"Hitomi"},
+{n:26, name:"Ichiyo Haneda", wikiEn:"Ichiyo_Haneda"},
+{n:27, name:"Ishida", wikiEn:"Ishida"},
+{n:28, name:"Jodie Starling", wikiEn:"Jodie_Starling"},
+{n:29, name:"Juno Glass", wikiEn:"Juno_Glass"},
+{n:30, name:"Kaori Nakahara", wikiEn:"Kaori_Nakahara"},
+{n:31, name:"Kazumi Tsukamoto", wikiEn:"Kazumi_Tsukamoto"},
+{n:32, name:"Kazuha Toyama", wikiEn:"Kazuha_Toyama"},
+{n:33, name:"Keiko Momoi", wikiEn:"Keiko_Momoi"},
+{n:34, name:"Kimie Shimabukuro", wikiEn:"Kimie_Shimabukuro"},
+{n:35, name:"Leona Buccholz", wikiEn:"Leona_Buccholz"},
+{n:36, name:"Maria Higashio", wikiEn:"Maria_Higashio"},
+{n:37, name:"Mary Sera", wikiEn:"Mary_Sera"},
+{n:38, name:"Masumi Sera", wikiEn:"Masumi_Sera"},
+{n:39, name:"Megumi Ito", wikiEn:"Megumi_Ito"},
+{n:40, name:"Midori Kuriyama", wikiEn:"Midori_Kuriyama"},
+{n:41, name:"Midori Megure", wikiEn:"Midori_Megure"},
+{n:42, name:"Midoriko Nakamori", wikiEn:"Midoriko_Nakamori"},
+{n:43, name:"Misae Yamamura", wikiEn:"Misae_Yamamura"},
+{n:44, name:"Miwako Sato", wikiEn:"Miwako_Sato"},
+{n:45, name:"Momiji Ooka", wikiEn:"Momiji_Ooka"},
+{n:46, name:"Mrs. Minagawa", wikiEn:"Mrs._Minagawa"},
+{n:47, name:"Naeko Miike", wikiEn:"Naeko_Miike"},
+{n:48, name:"Natsue Hatamoto", wikiEn:"Natsue_Hatamoto"},
+{n:49, name:"Natsuki Koshimizu", wikiEn:"Natsuki_Koshimizu"},
+{n:50, name:"Natsuko Shibuya", wikiEn:"Natsuko_Shibuya"},
+{n:51, name:"Ooka Family Mother", wikiEn:"Ooka_Family_Mother"},
+{n:52, name:"Ran Mouri", wikiEn:"Ran_Mouri"},
+{n:53, name:"Reiko Kujo", wikiEn:"Reiko_Kujo"},
+{n:54, name:"Renge Kataoka", wikiEn:"Renge_Kataoka"},
+{n:55, name:"Rose", wikiEn:"Rose"},
+{n:56, name:"Ruby Jones", wikiEn:"Ruby_Jones"},
+{n:57, name:"Rumi Wakasa", wikiEn:"Rumi_Wakasa"},
+{n:58, name:"Sakura Toyama", wikiEn:"Sakura_Toyama"},
+{n:59, name:"Sakurako Yonehara", wikiEn:"Sakurako_Yonehara"},
+{n:60, name:"Sanae Sugita", wikiEn:"Sanae_Sugita"},
+{n:61, name:"Sato Family Mother", wikiEn:"Sato_Family_Mother"},
+{n:62, name:"Sayaka Mine", wikiEn:"Sayaka_Mine"},
+{n:63, name:"Shiho Miyano", wikiEn:"Shiho_Miyano"},
+{n:64, name:"Shizuka Hattori", wikiEn:"Shizuka_Hattori"},
+{n:65, name:"Shizuka Mine", wikiEn:"Shizuka_Mine"},
+{n:66, name:"Sonoko Suzuki", wikiEn:"Sonoko_Suzuki"},
+{n:67, name:"Starling Family Mother", wikiEn:"Starling_Family_Mother"},
+{n:68, name:"Sumiko Kobayashi", wikiEn:"Sumiko_Kobayashi"},
+{n:69, name:"Teiko Agasa", wikiEn:"Teiko_Agasa"},
+{n:70, name:"Tomoko Suzuki", wikiEn:"Tomoko_Suzuki"},
+{n:71, name:"Vermouth", wikiEn:"Vermouth"},
+{n:72, name:"Yoko Okino", wikiEn:"Yoko_Okino"},
+{n:73, name:"Yoko Sawaki", wikiEn:"Yoko_Sawaki"},
+{n:74, name:"Yui Uehara", wikiEn:"Yui_Uehara"},
+{n:75, name:"Yukiko Kudo", wikiEn:"Yukiko_Kudo"},
+{n:76, name:"Yumi Miyamoto", wikiEn:"Yumi_Miyamoto"},
+{n:77, name:"Yuzui Fukui", wikiEn:"Yuzui_Fukui"}
+];
+
+const grid = document.getElementById('grid');
+const voteBtn = document.getElementById('voteBtn');
+const clearBtn = document.getElementById('clearBtn');
+const statusEl = document.getElementById('status');
+const pickedInfo = document.getElementById('pickedInfo');
+const choicesField = document.getElementById('choicesField');
+const captchaModal = document.getElementById('captchaModal');
+
+let selected = new Set();
+
+function updateUIState(){
+  voteBtn.disabled = selected.size === 0 || selected.size > 3;
+  clearBtn.disabled = selected.size === 0;
+  pickedInfo.textContent = `المختار: ${selected.size} / 3`;
+  choicesField.value = Array.from(selected).map(n=>{
+    const item = CHARACTERS.find(m=>m.n==n);
+    return `${item?.name || ''}`;
+  }).join(' | ');
+}
+
+function flash(msg, ms=2000){
+  statusEl.textContent = msg;
+  if(ms) setTimeout(()=>statusEl.textContent='', ms);
+}
+
+function cardTemplate({n,name,wikiEn}){
+  const card=document.createElement('div'); card.className='card';
+  const posterWrap=document.createElement('div'); posterWrap.className='poster-wrap';
+  const img=document.createElement('img'); img.className='poster'; img.alt=name; img.loading='lazy';
+  const fallback=document.createElement('div'); fallback.className='fallback'; fallback.textContent='جاري تحميل الصورة…';
+  posterWrap.appendChild(fallback);
+
+  const info=document.createElement('div'); info.className='info';
+  const title=document.createElement('div'); title.className='title'; title.textContent=`${n}. ${name}`;
+  const sub=document.createElement('div'); sub.className='subtitle'; sub.textContent = wikiEn ? `Wikipedia: ${wikiEn.replaceAll('_',' ')}` : '';
+
+  const pickline=document.createElement('label'); pickline.className='pickline';
+  const checkbox=document.createElement('input'); checkbox.type='checkbox'; checkbox.value=n;
+  checkbox.addEventListener('change', ()=>{
+    if(checkbox.checked){
+      if(selected.size >=3){ checkbox.checked=false; flash('مسموح بحد أقصى 3 شخصيات فقط ✅',2200); return;}
+      selected.add(n);
+    } else { selected.delete(n); }
+    updateUIState();
+  });
+  const pickText=document.createElement('span'); pickText.textContent='اختيار هذه الشخصية';
+  pickline.appendChild(checkbox); pickline.appendChild(pickText);
+
+  info.appendChild(title); info.appendChild(sub); info.appendChild(pickline);
+  card.appendChild(posterWrap); card.appendChild(info);
+
+  fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiEn)}`)
+    .then(r=>r.json()).then(data=>{
+      if(data?.thumbnail?.source || data?.originalimage?.source){
+        img.src = data.thumbnail?.source || data.originalimage?.source;
+        posterWrap.innerHTML=''; posterWrap.appendChild(img);
+      } else { fallback.textContent='لا توجد صورة متاحة'; }
+    }).catch(()=>{ fallback.textContent='لا توجد صورة متاحة'; });
+
+  return card;
+}
+
+CHARACTERS.forEach(ch => grid.appendChild(cardTemplate(ch)));
+
+clearBtn.addEventListener('click', ()=>{
+  selected.clear();
+  document.querySelectorAll('.pickline input[type="checkbox"]').forEach(ch=>ch.checked=false);
+  updateUIState();
 });
 
-// عند اكتمال الكابتشا
-window.turnstileCallback = async function(token){
-    const checked = Array.from(document.querySelectorAll('input[name="choices"]:checked')).map(c=>c.value);
-    const formData = new FormData();
-    formData.append("choices", checked.join(" | "));
-    formData.append("ip", (await fetch("https://api.ipify.org?format=json").then(r=>r.json())).ip);
-    formData.append("cf-turnstile-response", token);
+voteBtn.addEventListener('click', ()=>{
+  if(selected.size===0){ 
+    flash('❌ اختر على الأقل شخصية واحدة'); 
+    return; 
+  }
+  captchaModal.style.display='flex';
+});
 
-    try {
-        const res = await fetch("رابط_سكربت_جوجل_الخاصة_بك", {method:"POST", body:formData});
-        const text = await res.text();
-        statusEl.textContent = text;
-        captchaContainer.style.display='none';
-    } catch(err) {
-        statusEl.textContent = "❌ حدث خطأ أثناء الإرسال";
-    }
+function closeModal(){
+  captchaModal.style.display='none';
+}
+
+window.turnstileCallback = async function(token){
+  const formData = new FormData();
+  formData.append("choices", choicesField.value);
+  formData.append("ip", (await fetch("https://api.ipify.org?format=json").then(r=>r.json())).ip);
+  formData.append("cf-turnstile-response", token);
+
+  try{
+    const res = await fetch(SCRIPT_URL, {method:"POST", body:formData});
+    flash('✅ تم إرسال تصويتك بنجاح!',3000);
+    selected.clear();
+    document.querySelectorAll('.pickline input').forEach(ch=>ch.checked=false);
+    updateUIState();
+    closeModal();
+  } catch(err){
+    flash('❌ حدث خطأ أثناء الإرسال',3000);
+  }
 };
+
+updateUIState();
 </script>
 </body>
 </html>
